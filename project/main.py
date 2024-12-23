@@ -1,5 +1,11 @@
+import multiprocessing
+
 import numpy as np
 import cv2 as cv
+import multiprocessing as mp
+
+
+thread_count = 10
 
 
 def generate_norms_2d(n, deviation):
@@ -24,11 +30,31 @@ def apply_gauss(img, compression=1, norm_count=100, deviation=1):
         cols.append(np.linspace(0, img.shape[1]-1, int(img.shape[1]/compression), dtype=int))
 
     new_img = np.empty(shape=(len(rows), len(cols[0]), img.shape[2]), dtype=np.uint8)
-    for i in range(new_img.shape[0]):
-        print(str(round((i / new_img.shape[0]) * 100, 2)) + "%")
 
-        for j in range(new_img.shape[1]):
+    threads = list()
+    manager = multiprocessing.Manager()
+    return_dict = manager.dict()
 
+    lines = np.arange(0, new_img.shape[0])
+    lines = np.array_split(lines, thread_count)
+
+    for line_set in lines:
+        thread = mp.Process(target=apply_gauss_line_thread, args=(line_set, new_img.shape[1], new_img.shape[2], img, rows, cols, norms, return_dict,))
+        threads.append(thread)
+        thread.start()
+
+    for thread in threads:
+        thread.join()
+
+    return np.array(return_dict.values())
+
+
+def apply_gauss_line_thread(lines, width, col_count, img, rows, cols, norms, return_dict):
+
+    for i in lines:
+        line = np.empty(shape=[width, col_count], dtype=np.uint8)
+
+        for j in range(width):
             points = [img[rows[i], cols[i][j]]]
 
             for norm in norms:
@@ -38,7 +64,7 @@ def apply_gauss(img, compression=1, norm_count=100, deviation=1):
                 if 0 < ii < img.shape[0] and 0 < jj < img.shape[1]:
                     points.append(img[ii, jj])
 
-            new_img[i, j] = np.mean(np.array(points), axis=0)
+            line[j] = (np.mean(np.array(points), axis=0))
 
-    return new_img
+        return_dict[i] = line
 

@@ -1,6 +1,5 @@
-import cv2
 import numpy as np
-import cv2 as cv
+import cv2
 from main import *
 
 image_path = "assets/sipos.jpg"

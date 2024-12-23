@@ -6,19 +6,17 @@ image_path = "assets/cezara.png"
 get_image = lambda: cv2.imread(image_path, cv2.IMREAD_COLOR)
 
 
-def smoothen(img):
+def expand(img):
 
-    # smooths image by a deviation of 1
-    img = apply_gauss(img, 1, 50, 1)
+    # expands image by a factor of 4 and smooths is
+    img = cv.resize(img, (0, 0), fx=4, fy=4)
+    img = apply_gauss(img, 1, 100, 1.5)
 
-    cv2.imwrite("assets/smoothed.jpg", img)
+    cv2.imwrite("assets/expanded.jpg", img)
 
     cv2.imshow("Cezara", img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
 
-if __name__ == '__main__':
-    smoothen(get_image())
-
-
+expand(get_image())
