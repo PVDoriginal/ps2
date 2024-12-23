@@ -1,7 +1,4 @@
-import multiprocessing
-
 import numpy as np
-import cv2 as cv
 import multiprocessing as mp
 
 
@@ -29,28 +26,32 @@ def apply_gauss(img, compression=1, norm_count=100, deviation=1):
     for _ in rows:
         cols.append(np.linspace(0, img.shape[1]-1, int(img.shape[1]/compression), dtype=int))
 
-    new_img = np.empty(shape=(len(rows), len(cols[0]), img.shape[2]), dtype=np.uint8)
-
+    # create a list of threads and a return dict
     threads = list()
-    manager = multiprocessing.Manager()
+    manager = mp.Manager()
     return_dict = manager.dict()
 
-    lines = np.arange(0, new_img.shape[0])
+    # divide lines in buckets
+    lines = np.arange(0, len(rows))
     lines = np.array_split(lines, thread_count)
 
+    # assign each thread to a bucket
     for line_set in lines:
-        thread = mp.Process(target=apply_gauss_line_thread, args=(line_set, new_img.shape[1], new_img.shape[2], img, rows, cols, norms, return_dict,))
+        thread = mp.Process(target=apply_gauss_line_thread, args=(line_set, len(cols[0]), img.shape[2], img, rows, cols, norms, return_dict,))
         threads.append(thread)
         thread.start()
 
+    # wait for all threads to finish
     for thread in threads:
         thread.join()
 
+    # return dict as image
     return np.array(return_dict.values())
 
 
 def apply_gauss_line_thread(lines, width, col_count, img, rows, cols, norms, return_dict):
 
+    # compute values for all given lines
     for i in lines:
         line = np.empty(shape=[width, col_count], dtype=np.uint8)
 
@@ -67,4 +68,7 @@ def apply_gauss_line_thread(lines, width, col_count, img, rows, cols, norms, ret
             line[j] = (np.mean(np.array(points), axis=0))
 
         return_dict[i] = line
+
+        if lines[0] == 0:
+            print("progress: " + str(round((i / lines[-1]) * 100, 2)) + "%")
 
