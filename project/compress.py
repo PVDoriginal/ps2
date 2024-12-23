@@ -10,7 +10,7 @@ get_image = lambda: cv2.imread(image_path, cv2.IMREAD_COLOR)
 def compress(img):
 
     # compresses image by a scale of 5 with slight smoothing
-    img = apply_gauss(img, 5, 50, 1)
+    img = apply_gauss(img, 5, 50, 3)
 
     cv2.imwrite("assets/compressed.jpg", img)
 

@@ -13,7 +13,7 @@ def generate_norms_2d(n, deviation):
 
 
 def apply_gauss(img, compression=1, norm_count=100, deviation=1):
-    norms = generate_norms_2d(norm_count, deviation / 1000 * np.log(img.size))
+    norms = generate_norms_2d(norm_count, deviation / 10 * np.log(img.size))
 
     # get list of rows based on compression
     rows = np.linspace(0, img.shape[0]-1, int(img.shape[0]/compression), dtype=int)
