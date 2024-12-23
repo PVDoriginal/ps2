@@ -10,7 +10,7 @@ get_image = lambda: cv2.imread(image_path, cv2.IMREAD_COLOR)
 def smoothen(img):
 
     # smooths image by a deviation of 0.2
-    img = apply_gauss(img, 1, 150, 0.2)
+    img = apply_gauss(img, 1, 150, 1)
 
     cv2.imwrite("assets/smoothed.jpg", img)
 
