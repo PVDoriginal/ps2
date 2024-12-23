@@ -16,7 +16,7 @@ def generate_norms_2d(n, deviation):
 
 
 def apply_gauss(img, compression=1, norm_count=100, deviation=1):
-    norms = generate_norms_2d(norm_count, deviation / 10 * np.log(img.size))
+    norms = generate_norms_2d(norm_count, deviation)
 
     # get list of rows based on compression
     rows = np.linspace(0, img.shape[0]-1, int(img.shape[0]/compression), dtype=int)
@@ -56,15 +56,19 @@ def apply_gauss_line_thread(lines, width, col_count, img, rows, cols, norms, ret
         line = np.empty(shape=[width, col_count], dtype=np.uint8)
 
         for j in range(width):
-            points = [img[rows[i], cols[i][j]]]
 
-            for norm in norms:
-                ii = rows[i] + int(norm[0])
-                jj = cols[i][j] + int(norm[1])
+            #
+            # points = [img[rows[i], cols[i][j]]]
+            #
+            # for norm in norms:
+            #     ii = rows[i] + int(norm[0])
+            #     jj = cols[i][j] + int(norm[1])
+            #
+            #     if 0 < ii < img.shape[0] and 0 < jj < img.shape[1]:
+            #         points.append(img[ii, jj])
 
-                if 0 < ii < img.shape[0] and 0 < jj < img.shape[1]:
-                    points.append(img[ii, jj])
-
+            points = norms + [i, j]
+            print(points)
             line[j] = (np.mean(np.array(points), axis=0))
 
         return_dict[i] = line
