@@ -19,10 +19,10 @@ def generate_norms(n, deviation):
 def apply_gauss(img, compression=1, norm_count=100, deviation=1):
     norms = generate_norms(norm_count, deviation)
 
-    # get list of rows based on compression
+    # get new list of rows based on compression
     rows = np.linspace(0, img.shape[0]-1, int(img.shape[0]/compression), dtype=int)
 
-    # get list of columns based on compression
+    # get new list of columns based on compression
     cols = np.linspace(0, img.shape[1]-1, int(img.shape[1]/compression), dtype=int)
 
     # create a shared memory for threads to write the results in
@@ -36,7 +36,7 @@ def apply_gauss(img, compression=1, norm_count=100, deviation=1):
 
     threads = list()
 
-    # create a threat for each set of lines
+    # create a thread for each set of lines
     for line_set in lines:
         thread = mp.Process(target=apply_gauss_line_thread, args=(line_set, len(cols), img, rows, cols, norms,))
         threads.append(thread)
