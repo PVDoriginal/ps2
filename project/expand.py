@@ -7,8 +7,8 @@ get_image = lambda: cv2.imread(image_path, cv2.IMREAD_COLOR)
 
 
 def expand(img):
-    img = cv2.resize(img, (0, 0), fx=3, fy=3)
-    img = apply_gauss(img, 1, 3, 0)
+    img = cv2.resize(img, (0, 0), fx=5, fy=5)
+    img = apply_gauss(img, 1, 50, 2.5)
 
     cv2.imwrite("assets/expanded.jpg", img)
 
