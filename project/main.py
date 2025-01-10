@@ -39,9 +39,9 @@ def expand(name, ext):
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 
 
-def hide_faces(img, compression=1, norm_count=10, deviation=10):
+def hide_faces(img, compression=1, norm_count=50, deviation=20):
     mask = np.full((img.shape[0], img.shape[1], 1), False)
-    faces = face_cascade.detectMultiScale(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY), 1.2, 6)
+    faces = face_cascade.detectMultiScale(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY), 1.2, 5)
     for (x, y, w, h) in faces:
         print("face detected!")
         # cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
@@ -63,8 +63,8 @@ if __name__ == '__main__':
 
     # smoothen("Sorina-Nicoleta-Predut", "png")
     # compress("sipos", "jpg")
-    expand("cezara", "jpeg")
-    # hide_faces_image("cezara3", "jpg")
+    # expand("cezara", "jpeg")
+    hide_faces_image("bucataru", "png")
 
     cv2.waitKey(0)
     cv2.destroyAllWindows()
