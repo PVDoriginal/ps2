@@ -13,7 +13,7 @@ def get_image(name):
 
 def smoothen(name, ext):
     img = get_image(f"{name}.{ext}")
-    img = apply_gauss(img, 1, 20, 10)
+    img = apply_gauss(img, 1, 50, 6)
 
     cv2.imwrite(f"assets/{name}_smoothened.png", img)
     cv2.imshow(name, img)
