@@ -38,6 +38,7 @@ def expand(name, ext):
 
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
 eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_eye.xml")
+mouth_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_smile.xml")
 
 
 def hide_cascade(img, target, compression=1, norm_count=50, deviation=20):
@@ -51,21 +52,23 @@ def hide_cascade(img, target, compression=1, norm_count=50, deviation=20):
             mask[y:y + h, x:x + w] = True
             break
 
-        col = img[y:y+h, x:x+w]
         face_roi = gray[y:y+h, x:x+w]
         mask_roi = mask[y:y+h, x:x+w]
 
-        eyes = eye_cascade.detectMultiScale(face_roi, 1.1, 5)
-        for (ex, ey, ew, eh) in eyes:
-            if 'eye' in target:
+        if 'eye' in target:
+            eyes = eye_cascade.detectMultiScale(face_roi, 1.2, 10)
+            for (ex, ey, ew, eh) in eyes:
                 mask_roi[ey:ey + eh, ex:ex + ew] = True
 
-        pass
+        if 'mouth' in target:
+            mouth = mouth_cascade.detectMultiScale(face_roi, 1.3, 10)
+            for (ex, ey, ew, eh) in mouth:
+                mask_roi[ey:ey + eh, ex:ex + ew] = True
 
     return apply_gauss(img, compression, norm_count, deviation, mask)
 
 
-def hide_faces_image(name, ext):
+def hide_faces(name, ext):
     img = get_image(f"{name}.{ext}")
     img = hide_cascade(img, 'face')
 
@@ -73,11 +76,19 @@ def hide_faces_image(name, ext):
     cv2.imshow(name, img)
 
 
-def hide_eyes_image(name, ext):
+def hide_eyes(name, ext):
     img = get_image(f"{name}.{ext}")
     img = hide_cascade(img, 'eyes')
 
     cv2.imwrite(f"assets/{name}_masked_eyes.png", img)
+    cv2.imshow(name, img)
+
+
+def hide_eyes_and_mouth(name, ext):
+    img = get_image(f"{name}.{ext}")
+    img = hide_cascade(img, 'eyesmouth')
+
+    cv2.imwrite(f"assets/{name}_masked_eyes_mouth.png", img)
     cv2.imshow(name, img)
 
 
@@ -86,8 +97,9 @@ if __name__ == '__main__':
     # smoothen("Sorina-Nicoleta-Predut", "png")
     # compress("sipos", "jpg")
     # expand("cezara", "jpeg")
-    # hide_faces_image("bucataru", "png")
-    hide_eyes_image("irofti", "jpg")
+    # hide_faces("bucataru", "png")
+    # hide_eyes("irofti", "jpg")
+    hide_eyes_and_mouth("moisil", "jpg")
 
     cv2.waitKey(0)
     cv2.destroyAllWindows()
