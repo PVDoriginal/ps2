@@ -13,7 +13,7 @@ def get_image(name):
 
 def smoothen(name, ext):
     img = get_image(f"{name}.{ext}")
-    img = apply_gauss(img, 1, 20, 25)
+    img = apply_gauss(img, 1, 20, 10)
 
     cv2.imwrite(f"assets/{name}_smoothened.png", img)
     cv2.imshow(name, img)
@@ -61,7 +61,7 @@ def hide_faces_image(name, ext):
 
 if __name__ == '__main__':
 
-    # smoothen("moisil", "png")
+    smoothen("Sorina-Nicoleta-Predut", "png")
     # expand("cezara", "png")
     # compress("sipos", "jpg")
     # hide_faces_image("cezara3", "jpg")
