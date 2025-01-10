@@ -23,14 +23,14 @@ def compress(name, ext):
     img = get_image(f"{name}.{ext}")
     img = apply_gauss(img, 10, 0, 0)
 
-    cv2.imwrite(f"assets/{name}compressed_pure.png", img)
+    cv2.imwrite(f"assets/{name}_compressed.png", img)
     cv2.imshow(name, img)
 
 
 def expand(name, ext):
     img = get_image(f"{name}.{ext}")
-    img = cv2.resize(img, (0, 0), fx=5, fy=5)
-    img = apply_gauss(img, 1, 50, 2.5)
+    img = cv2.resize(img, (0, 0), fx=10, fy=10)
+    img = apply_gauss(img, 1, 50, 5)
 
     cv2.imwrite(f"assets/{name}_expanded.png", img)
     cv2.imshow(name, img)
@@ -62,8 +62,8 @@ def hide_faces_image(name, ext):
 if __name__ == '__main__':
 
     # smoothen("Sorina-Nicoleta-Predut", "png")
-    compress("sipos", "jpg")
-    # expand("cezara", "png")
+    # compress("sipos", "jpg")
+    expand("cezara", "jpeg")
     # hide_faces_image("cezara3", "jpg")
 
     cv2.waitKey(0)
