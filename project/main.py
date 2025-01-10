@@ -37,15 +37,29 @@ def expand(name, ext):
 
 
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_eye.xml")
 
 
-def hide_faces(img, compression=1, norm_count=50, deviation=20):
+def hide_cascade(img, target, compression=1, norm_count=50, deviation=20):
     mask = np.full((img.shape[0], img.shape[1], 1), False)
-    faces = face_cascade.detectMultiScale(cv2.cvtColor(img, cv2.COLOR_BGR2GRAY), 1.2, 5)
+
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    faces = face_cascade.detectMultiScale(gray, 1.2, 5)
     for (x, y, w, h) in faces:
-        print("face detected!")
-        # cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
-        mask[y:y + h, x:x + w] = True
+
+        if 'face' in target:
+            mask[y:y + h, x:x + w] = True
+            break
+
+        col = img[y:y+h, x:x+w]
+        face_roi = gray[y:y+h, x:x+w]
+        mask_roi = mask[y:y+h, x:x+w]
+
+        eyes = eye_cascade.detectMultiScale(face_roi, 1.1, 5)
+        for (ex, ey, ew, eh) in eyes:
+            if 'eye' in target:
+                mask_roi[ey:ey + eh, ex:ex + ew] = True
+
         pass
 
     return apply_gauss(img, compression, norm_count, deviation, mask)
@@ -53,9 +67,17 @@ def hide_faces(img, compression=1, norm_count=50, deviation=20):
 
 def hide_faces_image(name, ext):
     img = get_image(f"{name}.{ext}")
-    img = hide_faces(img)
+    img = hide_cascade(img, 'face')
 
     cv2.imwrite(f"assets/{name}_masked.png", img)
+    cv2.imshow(name, img)
+
+
+def hide_eyes_image(name, ext):
+    img = get_image(f"{name}.{ext}")
+    img = hide_cascade(img, 'eyes')
+
+    cv2.imwrite(f"assets/{name}_masked_eyes.png", img)
     cv2.imshow(name, img)
 
 
@@ -64,7 +86,8 @@ if __name__ == '__main__':
     # smoothen("Sorina-Nicoleta-Predut", "png")
     # compress("sipos", "jpg")
     # expand("cezara", "jpeg")
-    hide_faces_image("bucataru", "png")
+    # hide_faces_image("bucataru", "png")
+    hide_eyes_image("irofti", "jpg")
 
     cv2.waitKey(0)
     cv2.destroyAllWindows()
