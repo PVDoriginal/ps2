@@ -56,6 +56,7 @@ def apply_gauss(img, compression=1, norm_count=100, deviation=1, mask=None):
 
 
 def apply_gauss_line_thread(lines, img, rows, cols, norms, mask):
+
     # open shared memory
     existing_shm = shared_memory.SharedMemory(name='img')
     new_img = np.ndarray(shape=(len(rows), len(cols), img.shape[2]), dtype=np.uint8, buffer=existing_shm.buf)
@@ -67,8 +68,6 @@ def apply_gauss_line_thread(lines, img, rows, cols, norms, mask):
             if mask is not None and not mask[rows[i], cols[j]]:
                 new_img[i, j] = img[rows[i], cols[j]]
                 continue
-
-            # print(dif[rows[i], cols[j]])
 
             points = [img[rows[i], cols[j]]]
 

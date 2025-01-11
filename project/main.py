@@ -50,7 +50,7 @@ def hide_cascade(img, target, compression=1, norm_count=50, deviation=20):
 
         if 'face' in target:
             mask[y:y + h, x:x + w] = True
-            break
+            continue
 
         face_roi = gray[y:y+h, x:x+w]
         mask_roi = mask[y:y+h, x:x+w]
