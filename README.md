@@ -190,3 +190,55 @@ def smoothen(name, ext):
 
     existing_shm.close()
 ```
+
+### Masti!
+- Ultimul lucru de implementat este parametrul *mask*, care va fi un np.array bidimensional (aceleasi dimensiuni ca ale imaginii) cu valori de True si False. Practic, ii dam filtrului o masca care ii spune pe care pixeli sa ii computeze, si pe care sa ii lase cum sunt. Implementarea in filtru este evident banala, asa ca voi arata cum este creata masca: 
+
+[ce sunt cascadele?](https://pyimagesearch.com/2021/04/12/opencv-haar-cascades/)
+```py
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
+eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_eye.xml")
+mouth_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_smile.xml")
+
+# o functie care primeste o anumita imagine si ii aplica un filtru peste o masca
+# target ii zice ce sa puna in masca (e.g. "face", "eyes", "eyesmouth")
+
+def hide_cascade(img, target, compression=1, norm_count=50, deviation=20):
+    mask = np.full((img.shape[0], img.shape[1], 1), False)
+
+    # pentru a aplica cascada este necesar sa convertim imaginea in greyscale
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
+    faces = face_cascade.detectMultiScale(gray, 1.2, 5)
+   
+    # parcurgem fetele detectate obtinandu-le bounding box-urile
+    # (x, y) este coordonate la care incepe o fata, si w si h sunt lungimea si intaltimea ei
+
+    for (x, y, w, h) in faces:
+
+        # daca selectam toata fata, o marcam in masca si trecem mai departe
+        if 'face' in target:
+            mask[y:y + h, x:x + w] = True
+            continue
+
+        # cream slice-uri care sa corespunda portiunii curente (fata)
+        face_roi = gray[y:y+h, x:x+w]
+        mask_roi = mask[y:y+h, x:x+w]
+
+        # selectam ochii
+        if 'eye' in target:
+            eyes = eye_cascade.detectMultiScale(face_roi, 1.2, 10)
+            for (ex, ey, ew, eh) in eyes:
+                mask_roi[ey:ey + eh, ex:ex + ew] = True
+
+        # selectam gura 
+        if 'mouth' in target:
+            mouth = mouth_cascade.detectMultiScale(face_roi, 1.3, 10)
+            for (ex, ey, ew, eh) in mouth:
+                mask_roi[ey:ey + eh, ex:ex + ew] = True
+
+    return apply_gauss(img, compression, norm_count, deviation, mask)
+``` 
+
+## Am terminat? 
+- In main.py am scris diferite teste si exemple care merg modificate usor.  
