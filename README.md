@@ -250,5 +250,9 @@ def hide_cascade(img, target, compression=1, norm_count=50, deviation=20):
 ![WhatsApp Image 2025-01-10 at 20 11 50_62f0ea28](https://github.com/user-attachments/assets/f8530c41-fe0a-4f04-a23e-bae81cacb3a1)
 
 
+## Dar de ce functioneaza?
+- 
+
+
 ## Am terminat? 
 - In main.py am scris diferite teste si exemple care merg modificate usor.  
