@@ -239,6 +239,15 @@ def hide_cascade(img, target, compression=1, norm_count=50, deviation=20):
 
     return apply_gauss(img, compression, norm_count, deviation, mask)
 ``` 
+## Se putea altfel?
+- Am incercat identificarea anumitor obiecte sau fete pe baza culorilor, in general folosind algoritmi [deltaE](https://en.wikipedia.org/wiki/Color_difference#CIELAB_%CE%94E*). Din pacate toate incercarile au esuat fenomenal. Printre altete, am obtinut: 
+
+![WhatsApp Image 2025-01-10 at 19 58 31_c823fe7a](https://github.com/user-attachments/assets/d77c3a87-e40b-46d6-b44b-a026b7ece6c3)
+![WhatsApp Image 2025-01-10 at 18 01 06_5838d445](https://github.com/user-attachments/assets/8b0743f1-4339-43d3-9291-4646c711cb90)
+![WhatsApp Image 2025-01-10 at 16 10 40_77273e88](https://github.com/user-attachments/assets/3db1dcf3-edc9-45d6-a753-2e448beeaeb8)
+![WhatsApp Image 2025-01-10 at 20 26 01_a63a72a0](https://github.com/user-attachments/assets/43f894be-c7c1-4a48-80d4-00d23c314ed6)
+![WhatsApp Image 2025-01-10 at 19 00 25_acb19662](https://github.com/user-attachments/assets/dda996ff-6dbc-4f73-b512-48ae62f8ddb2)
+
 
 ## Am terminat? 
 - In main.py am scris diferite teste si exemple care merg modificate usor.  
