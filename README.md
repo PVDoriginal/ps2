@@ -256,5 +256,17 @@ def hide_cascade(img, target, compression=1, norm_count=50, deviation=20):
 "Varful" functiei este punctul al carei medie vrem sa o calculam, iar dupa cum se poate vedea, cu cat este un punct mai aproape de varf, cu atat are sanse mai mari sa fie ales ca norma. Astfel, vor fi mai multe norme generate cu culori similare, rezultand intr-o medie similara cu culoarea initiala, dar si cu "culoarea teoretica" despre care vom vorbi putin mai tarziu. Combinand astfel fiecare pixel cu pixelii vecini, reusim sa netezim tranzitiile puternice dintre culori - similar cu exercitiul 1 din laboratorul 12 unde am avut de netezit un semnal dat de o combinatie de functii trigonometrice.
 
 
+## Marja de eroare + Nivel de incredere
+In mod evident, cu cat avem mai multe norme, cu atat imaginea este blurata mai bine. Dar de cate norme avem nevoie de exemplu pentru a avea o anumita marja de eroare cu un anumit nivel de incredere?
+Intrucat o culoare a unui pixel este descrisa de 3 parametri independenti (r, g, b), putem determina de cate simulari este nevoie pentru ca marja de eroare a uneia dintre culorile primare sa fie de maxim z = 32, cu un nivel de incredere de a = 80%.
+Deoarece cantitatea unei culori primare este o variabila aleatoare marginita intre x = 0 si y = 255, putem folosi inegalitatea Chernoff-Hoeffding, care ne spune ca probabilitatea ca diferenta absoluta dintre media teoretica si media empirica data de n simulari sa fie mai mica decat un z>0 este mai mare decat 1-2e^(-2nz^2/(y-x)^2) > a <br>
+e^(-2nz^2/(y-x)^2) < (1-a)/2 <br>
+2nz^2/(y-x)^2 > -ln((1-a)/2) <br>
+n > -ln((1-a)/2) * (y-x)^2 / 2z^2 <br>
+Inlocuind, obtinem
+n > ln(10) * 255^2 /1024 ~ 73. <br>
+Concluzie: Pentru ca la oricare din cele 3 componente ale unei culori sa avem garantat o marja de eroare de 32 cu un nivel de incredere de 80%, avem nevoie de 73 de norme. Cu alte cuvinte, daca folosim 73 de norme, avem o probabilitate de minim 80% ca diferenta absoluta dintre componenta culorii teoretice obtinuta prin calcularea mediei ponderate a tuturor pixelilor din imagine si componenta culorii obtinute empiric sa fie mai mica sau egala cu 32.
+
+
 ## Am terminat? 
 - In main.py am scris diferite teste si exemple care merg modificate usor.
