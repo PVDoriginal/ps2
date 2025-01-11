@@ -9,11 +9,11 @@ Toate imaginile date ca exemplu sunt din domeniul public, luate de pe internet.
 
 Proiectul se bazeaza pe aplicarea unui filtru Gaussian pe o imagine in diferite moduri. 
 
-- Datorita proprietatilor filtrului (detalii tehnice mai jos) putem sa si **comprimam (sau sa marim)** o imagine in timp ce il aplicam:
-
- Andrei Sipos Normal - 1021 KB         |  Andrei Sipos Comprimat - 125 KB
+- Cea mai simpla utilizare este de a-l aplica pe o imagine intreaga:
+  
+ Marius Dumitran Normal         |  Marius Dumitran Blurat
 :-------------------------:|:-------------------------:
-<img src="./project/assets/sipos.jpg" alt="Sipos normal" style="width:40em; height:auto;"> | <img src="./project/assets/siposcompressed.png" alt="Sipos comprimat" style="width:40em; height:auto;">
+<img src="./project/assets/dumitran.jpg" alt="Dumitran normal" style="width:40em; height:auto;"> | <img src="./project/assets/dumitran_smoothened.png" alt="Dumitran blurat" style="width:40em; height:auto;">
 
 - Mai jos am folosit un neural network deja antrenat pe facial recognition, pentru a selecta bucati din imagini si a le aplica filtrul:
 
@@ -142,6 +142,12 @@ Am facut asta prin introducerea unui nou parametru, *compression* care stabilest
  Andrei Sipos Normal - 1021 KB         |  Andrei Sipos Comprimat (Deviatie 0) - 131 KB
 :-------------------------:|:-------------------------:
 <img src="./project/assets/sipos.jpg" alt="Sipos normal" style="width:40em; height:auto;"> | <img src="./project/assets/siposcompressed_pure.png" alt="Sipos comprimat choppy" style="width:40em; height:auto;">
+
+- Daca aplicam filtrul in timpul compresarii, obtinem:
+
+ Andrei Sipos Normal - 1021 KB         |  Andrei Sipos Comprimat - 125 KB
+:-------------------------:|:-------------------------:
+<img src="./project/assets/sipos.jpg" alt="Sipos normal" style="width:40em; height:auto;"> | <img src="./project/assets/siposcompressed.png" alt="Sipos comprimat" style="width:40em; height:auto;">
 
 
 ### Se misca incet!
@@ -309,6 +315,9 @@ Deoarece cantitatea unei culori primare este o variabila aleatoare marginita int
 
 ## Am terminat
 Da, cam asta e tot.
+
+## Pycharm?
+Pe pycharm este posibil sa nu mearga instalat direct modulul cv2. [Solutie rapida](https://stackoverflow.com/questions/34365044/pycharm-does-not-recognize-cv2-as-a-module). 
 
 ## De incercat, am incercat
 - Am incercat identificarea anumitor obiecte sau fete pe baza culorilor, in general folosind algoritmi [deltaE](https://en.wikipedia.org/wiki/Color_difference#CIELAB_%CE%94E*). Din pacate toate incercarile au esuat fenomenal. Printre altete, am obtinut: 
