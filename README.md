@@ -251,8 +251,10 @@ def hide_cascade(img, target, compression=1, norm_count=50, deviation=20):
 
 
 ## Dar de ce functioneaza?
-- 
+- Simularea Monte Carlo facuta pentru generarea de norme folosind o variabila normala si Unif(0,2pi). Graficul de mai jos este functia de densitate a variabilei aleatoare compusa din coordonatele carteziene.
+  <img src="/project/assets/normala3d.png" alt="Alt Text" style="width:40em; height:auto;">
+"Varful" functiei este punctul al carei medie vrem sa o calculam, iar dupa cum se poate vedea, cu cat este un punct mai aproape de varf, cu atat are sanse mai mari sa fie ales ca norma. Astfel, vor fi mai multe norme generate cu culori similare, rezultand intr-o medie similara cu culoarea initiala, dar si cu "culoarea teoretica" despre care vom vorbi putin mai tarziu. Combinand astfel fiecare pixel cu pixelii vecini, reusim sa netezim tranzitiile puternice dintre culori - similar cu exercitiul 1 din laboratorul 12 unde am avut de netezit un semnal dat de o combinatie de functii trigonometrice.
 
 
 ## Am terminat? 
-- In main.py am scris diferite teste si exemple care merg modificate usor.  
+- In main.py am scris diferite teste si exemple care merg modificate usor.
