@@ -247,6 +247,7 @@ def hide_cascade(img, target, compression=1, norm_count=50, deviation=20):
 ![WhatsApp Image 2025-01-10 at 16 10 40_77273e88](https://github.com/user-attachments/assets/3db1dcf3-edc9-45d6-a753-2e448beeaeb8)
 ![WhatsApp Image 2025-01-10 at 20 26 01_a63a72a0](https://github.com/user-attachments/assets/43f894be-c7c1-4a48-80d4-00d23c314ed6)
 ![WhatsApp Image 2025-01-10 at 19 00 25_acb19662](https://github.com/user-attachments/assets/dda996ff-6dbc-4f73-b512-48ae62f8ddb2)
+![WhatsApp Image 2025-01-10 at 20 11 50_62f0ea28](https://github.com/user-attachments/assets/f8530c41-fe0a-4f04-a23e-bae81cacb3a1)
 
 
 ## Am terminat? 
