@@ -1,8 +1,8 @@
 import numpy as np
 import cv2
 import cv2.data
-
 from gauss import *
+
 
 def get_image(name):
     return cv2.imread(f"assets/{name}", cv2.IMREAD_COLOR)
@@ -10,7 +10,7 @@ def get_image(name):
 
 def smoothen(name, ext):
     img = get_image(f"{name}.{ext}")
-    img = apply_gauss(img, 1, 50, 6)
+    img = apply_gauss(img, 1, 50, 4)
 
     cv2.imwrite(f"assets/{name}_smoothened.png", img)
     cv2.imshow(name, img)
@@ -92,11 +92,12 @@ def hide_eyes_and_mouth(name, ext):
 if __name__ == '__main__':
 
     # smoothen("Sorina-Nicoleta-Predut", "png")
+    smoothen("dumitran", "jpg")
     # compress("sipos", "jpg")
     # expand("cezara", "jpeg")
     # hide_faces("bucataru", "png")
     # hide_eyes("irofti", "jpg")
-    hide_eyes_and_mouth("moisil", "jpg")
+    # hide_eyes_and_mouth("moisil", "jpg")
 
     cv2.waitKey(0)
     cv2.destroyAllWindows()
