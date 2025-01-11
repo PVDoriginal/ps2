@@ -4,9 +4,6 @@ import cv2.data
 
 from gauss import *
 
-from skimage.color import rgb2lab, lab2rgb, deltaE_ciede2000, deltaE_ciede94, deltaE_cie76, deltaE_cmc
-
-
 def get_image(name):
     return cv2.imread(f"assets/{name}", cv2.IMREAD_COLOR)
 
