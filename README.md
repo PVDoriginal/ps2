@@ -49,6 +49,144 @@ Sorina Predut Normala             |  Sorina Predut Blurata
  Moisil Normal        |  Moisil Igrasiat
 :-------------------------:|:-------------------------:
 <img src="/project/assets/moisil.jpg" alt="Alt Text" style="width:40em; height:auto;"> | <img src="/project/assets/moisil_masked_eyes_mouth.png" alt="Alt Text" style="width:40em; height:auto;">
-## Explicatii Cod (ma doare capul)
+
+## Sa intram in paine!
+
+### Coaja
+- Pentru incarcarea si modificarea imaginilor am folosit modulul cv2. Pentru a-l importa este necesar un pachet special numit *opencv*. [Aici](https://stackoverflow.com/questions/34365044/pycharm-does-not-recognize-cv2-as-a-module) sunt cativa pasi pentru a-l instala in Pycharm. 
+
+- Imaginile sunt salvate ca un np-array cu shape-ul (width, height, 3). Sunt practic o matrice cu elemente de tip (r, g, b), sau, mai corect, (b, g, r) :D  
+- Putem accesa dimensiunile unei imagini folosind img.shape[0] si img.shape[1] respectiv. 
+
+### Miezul
+
+- Filtrul pe care l-am folosit are la baza o functie care genereaza perechi de coordonate 2D distribuite normal in jurul lui (0, 0), cu o anumita deviatie.
+```py
+def generate_norms(n, deviation):
+    theta = np.random.random(n) * np.pi * 2
+    r = -2 * np.log(np.random.random(n))
+
+    x = np.multiply(np.sqrt(r), np.cos(theta)) * deviation
+    y = np.sqrt(r) * np.sin(theta) * deviation
+
+    return np.dstack((x, y))[0]
+```
 
 
+- Scopul final este sa parcurgem fiecare pixel din imagine, sa colectam coordonate din jurul lui (adaugandu-i normalele de mai sus), si sa-l egalam cu media lor:
+```py
+    for i in img.shape[0]:
+        for j in img.shape[1]:
+
+            # colectam si punctul in sine, in cazul in care nu gasim niciun alt punct
+            points = [img[i, j]]
+
+            # parcurgem normalele
+            for norm in norms:
+                ii = i + int(norm[0])
+                jj = j + int(norm[1])
+                
+                # verificam daca coordonatele punctului nou sunt valide inainte de a-l colecta
+                if 0 <= ii < img.shape[0] and 0 <= jj < img.shape[1]:
+                    points.append(img[ii, jj])
+        
+            # setam punctul original ca media punctelor colectate
+            new_img[i, j] = np.mean(np.array(points), axis = 0)
+```
+- Acum, un apel simplu al acestui filtru arata asa:
+```py
+def smoothen(name, ext):
+
+    # citim imaginea
+    img = get_image(f"{name}.{ext}")
+
+    # setam numarul de coordonate normale pe care vrem sa-l generam, si deviatia acestora
+    # deviatie mai mare = imagine mai blurata
+    # mai multe coordonate = acuratete si uniformitate mai bune
+
+    img = apply_gauss(img, norm_count: 50, deviation: 6)
+
+    # scriem si afisam imaginea noua 
+    cv2.imwrite(f"assets/{name}_smoothened.png", img)
+    cv2.imshow(name, img)
+```
+
+### Cum comprimam?
+- Am facut asta prin introducerea unui nou parametru, *compression* care stabileste scara de compresie aplicata asupra imaginii (daca ea este 400x400 si aplicam o compresie de 2, vom pastra doar 200x200 pixeli)
+- Intern, generam noi liste de indexi de linii si coloane, reprezentand pixelii pe care ii vom pastra:
+```py
+    rows = np.linspace(0, img.shape[0]-1, int(img.shape[0]/compression), dtype=int)
+    cols = np.linspace(0, img.shape[1]-1, int(img.shape[1]/compression), dtype=int)
+``` 
+- Acum, putem face o alta imagine de dimensiuni mai mici, iar trecerea din coordonatele ei (i, j) in coordonatele imaginii mari / initiale se va face cu rows[i], cols[j]
+- Se modifica un pic iterarea prin pixeli, acum tinand cont de trecerea dintr-o dimensiune in alta: 
+
+```py
+    for i in range(len(rows)):
+        for j in range(len(cols)):
+            points = [img[rows[i], cols[j]]]
+
+            for norm in norms:
+                ii = rows[i] + int(norm[0])
+                jj = cols[j] + int(norm[1])
+
+                if 0 <= ii < img.shape[0] and 0 <= jj < img.shape[1]:
+                    points.append(img[ii, jj])
+
+            new_img[i, j] = np.mean(np.array(points), axis=0)
+```
+
+### Se misca incet!
+- Prima data cand filtram o imagine de 1000x1000px, dura 20-30 de secunde. Acum am redus timpul la 2-3 secunde cu ajutorul threadurilor (sau teoretic a proceselor multiple, interpretorul de python fiind fortat sa ruleze pe un singur thread mereu)
+- Am alocat 12 threaduri (ar trebui sa fie maxim 2 pe cpu core), si am impartit lista de linii (rows) in 12 seturi de linii. Am creat un thread pentru fiecare set, avand scopul de computa pixelii de pe liniile setului respectiv. 
+
+```py
+    # cream seturile de linii
+    lines = np.arange(0, len(rows))
+    lines = np.array_split(lines, thread_count)
+
+    threads = list()
+
+    # cream un thread pentru fiecare set si il adaugam intr-o lista
+    for line_set in lines:
+        thread = mp.Process(target=apply_gauss_line_thread, args=(line_set, img, rows, cols, norms, mask,))
+        threads.append(thread)
+        thread.start()
+
+    # asteptam sa se termine toate threadurile 
+    for thread in threads:
+        thread.join()
+``` 
+
+-- Am creat si un spatiu de shared memory pentru a le permite threadurilor sa scrie partea lor din noua imagine
+```py
+    # in procesul principal
+
+    a = np.empty(shape=(len(rows), len(cols), img.shape[2]), dtype=np.uint8)
+    shm = shared_memory.SharedMemory(create=True, size=a.nbytes, name="img")
+    new_img = np.ndarray(a.shape, dtype=a.dtype, buffer=shm.buf)
+
+    ...
+
+    # la final clonam imaginea local pentru a putea inchide shared memory-ul
+    new_img2 = np.array(new_img)
+
+    shm.close()
+    shm.unlink()
+
+    return new_img2
+```
+```py
+    # pe thread
+
+    existing_shm = shared_memory.SharedMemory(name='img')
+    new_img = np.ndarray(shape=(len(rows), len(cols), img.shape[2]), dtype=np.uint8, buffer=existing_shm.buf)
+
+    ...
+
+    new_img[i, j] = np.mean(np.array(points), axis=0)
+
+    ...
+
+    existing_shm.close()
+```
